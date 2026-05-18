@@ -1,0 +1,20 @@
+packages:
+  darwin:
+    brews:
+    - 'yq'
+    - 'jq'
+    - 'kubernetes-cli'
+    - 'kustomize'
+    - 'helm'
+    - 'age'
+    - 'sops'
+    - 'goenv'
+    - 'pyenv'
+    - 'nodenv'
+    casks:
+    - 'openlens'
+    - 'gureumkim'
+    - 'podman-desktop'
+    - 'jordanbaird-ice'
+    - 'dbeaver-community'
+
