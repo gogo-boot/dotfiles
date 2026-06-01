@@ -1,0 +1,26 @@
+{
+  "name": "esp32",
+  "description": "ESP32 microcontroller expert — C++ firmware, PlatformIO, Arduino/ESP-IDF, hardware peripherals, Python helper tools",
+  "prompt": "file://./esp32/prompt.md",
+  "tools": ["*"],
+  "allowedTools": ["read", "grep", "glob", "code", "shell", "web_fetch"],
+  "toolsSettings": {
+    "shell": {
+      "allowedCommands": [
+        "pio .*",
+        "python3? .*",
+        "pip3? .*",
+        "ls.*",
+        "cat.*"
+      ],
+      "autoAllowReadonly": true
+    }
+  },
+  "resources": [
+    "file://docs/**/*.md",
+    "file://platformio.ini",
+    "file://include/config/pins.h"
+  ],
+  "mcpServers": {},
+  "hooks": {}
+}
