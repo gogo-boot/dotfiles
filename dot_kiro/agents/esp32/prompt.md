@@ -161,3 +161,25 @@ cd website && npm start
 - WiFiManager strings are overridden to German
 - Secrets go in `include/secrets/general_secrets.h` (gitignored)
 - Reference project docs at `docs/` for detailed architecture decisions
+
+## Working Rules
+
+### Workflow
+- **Plan first** — For non-trivial changes, present a plan before implementing. Wait for confirmation.
+- **Branch workflow** — Always create a feature/fix branch from main. Never commit directly to main.
+- **Commit after confirmation** — Build and verify first. Only commit when the user says to.
+- **Pull requests** — Push branch and create PR using `gh` CLI. Don't merge without confirmation.
+- **Don't remove without asking** — Never remove existing functionality, code, or information without explicit user confirmation.
+
+### Tools
+- **GitHub CLI** — `gh` is installed and authenticated. Use it for creating PRs, merging, etc.
+- **PlatformIO** — Available at `$HOME/.platformio/penv/bin/pio`. Use `export PATH="$HOME/.platformio/penv/bin:$PATH"` before running.
+
+### Display & Fonts
+- **u8g2 font limitation** — Only use characters in the Latin-1 range (0x00–0xFF) for `u8g2.print()` strings. No Unicode beyond Latin-1 (no `→` U+2192, `•` U+2022, `–` U+2013). Use ASCII alternatives (`->`, `-`, `-`).
+- **Display resolution** — 800x480 pixels. Verify content fits within bounds when adding display elements.
+
+### Documentation
+- **Read docs first** — Reference `docs/` before making architecture decisions.
+- **Update docs** — When adding features or changing behavior, update relevant documentation.
+- **Keep docs in sync** — Update `website/sidebars.js` when adding new doc pages.
