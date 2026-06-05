@@ -1,0 +1,10 @@
+{
+  "name": "linkedin-writer",
+  "description": "LinkedIn article writer — generates posts with Unicode bold/italic formatting, hashtags, character limits, and thumbnail image prompts",
+  "prompt": "file://./linkedin-writer/prompt.md",
+  "mcpServers": {},
+  "tools": ["*"],
+  "resources": [
+    "file://./linkedin-writer/rules/**/*.md"
+  ]
+}
