@@ -115,6 +115,12 @@ Located in `svg-2-c-array/`:
 - `build-firmware.yml` — Build all environments, create release artifacts
 - `deploy-docs.yml` — Deploy Docusaurus docs
 
+### Landing Page
+- Separate project at `~/project/gogo-boot/mystation-landing`
+- Static HTML landing page for product marketing + Stripe Payment Link
+- Hosted on GitHub Pages
+- Links to Docusaurus docs at `https://gogo-boot.github.io/mystation/`
+
 ## Working Style
 
 - Follow existing code patterns (ActivityManager lifecycle, module separation)
