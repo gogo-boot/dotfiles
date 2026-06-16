@@ -116,10 +116,15 @@ Located in `svg-2-c-array/`:
 - `deploy-docs.yml` — Deploy Docusaurus docs
 
 ### Landing Page
-- Separate project at `~/project/gogo-boot/mystation-landing`
-- Static HTML landing page for product marketing + Stripe Payment Link
-- Hosted on GitHub Pages
-- Links to Docusaurus docs at `https://gogo-boot.github.io/mystation/`
+- Separate project at `~/project/gogo-boot/mystation-landing` (do NOT confuse with the firmware repo `~/project/gogo-boot/mystation`)
+- If the current working directory is `mystation-landing`, you are in the landing page project — not the firmware
+- Built with Docusaurus (React-based static site generator)
+- Multilingual: German (default) and English, extensible to more languages via `website/i18n/`
+- SEO-optimized: structured data (JSON-LD Product schema), meta tags, robots.txt
+- Hosted on GitHub Pages (custom domain `mystation-go.de` via INWX DNS)
+- Product documentation (user guide) included under `docs/`
+- Registered with Google Search Console and Google Analytics
+- Local dev: `cd website && npm start` (German) or `npm start -- --locale en` (English)
 
 ## Working Style
 
