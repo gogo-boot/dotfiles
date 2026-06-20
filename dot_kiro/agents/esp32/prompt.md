@@ -190,6 +190,10 @@ cd website && npm start
 - **u8g2 font limitation** — Only use characters in the Latin-1 range (0x00–0xFF) for `u8g2.print()` strings. No Unicode beyond Latin-1 (no `→` U+2192, `•` U+2022, `–` U+2013). Use ASCII alternatives (`->`, `-`, `-`).
 - **Display resolution** — 800x480 pixels. Verify content fits within bounds when adding display elements.
 
+### Web Configuration Page (HTML/JS/CSS)
+- **Cross-platform compatible** — The config page (`data/config_my_station.html`) must work on Android, iOS, macOS, and Windows browsers. Use only ES6+ features (no IE11 support needed). Avoid bleeding-edge CSS (no `container queries`, no `has()` selector). Use `var` for variables when possible, `fetch()` for HTTP, `classList` for DOM manipulation.
+- **No external dependencies** — All CSS and JS must be inline (single HTML file embedded in firmware). No CDN links, no npm packages.
+
 ### Documentation
 - **Read docs first** — Reference `docs/` before making architecture decisions.
 - **Update docs** — When adding features or changing behavior, update relevant documentation.
