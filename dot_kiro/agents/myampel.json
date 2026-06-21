@@ -1,0 +1,28 @@
+{
+  "name": "myampel",
+  "description": "MyAmpel — ESP32-C3 train signal toy for kids. C++ firmware, PlatformIO, MQTT signal communication, battery-powered LEDs",
+  "prompt": "file://./myampel/prompt.md",
+  "tools": ["*"],
+  "allowedTools": ["read", "grep", "glob", "code", "shell", "web_fetch", "web_search"],
+  "toolsSettings": {
+    "shell": {
+      "allowedCommands": [
+        "pio .*",
+        "python3? .*",
+        "pip3? .*",
+        "ls.*",
+        "cat.*",
+        "git .*",
+        "gh .*"
+      ],
+      "autoAllowReadonly": true
+    }
+  },
+  "resources": [
+    "file://platformio.ini",
+    "file://docs/**/*.md",
+    "file://include/config/pins.h"
+  ],
+  "mcpServers": {},
+  "hooks": {}
+}
