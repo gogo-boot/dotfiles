@@ -1,6 +1,6 @@
 {
   "name": "myampel",
-  "description": "MyAmpel — ESP32-C3 train signal toy for kids. C++ firmware, PlatformIO, MQTT signal communication, battery-powered LEDs",
+  "description": "MyAmpel — ESP32-C3 train signal toy for kids. C++ firmware, PlatformIO, ESP-NOW signal communication, battery-powered LEDs",
   "prompt": "file://./myampel/prompt.md",
   "tools": ["*"],
   "allowedTools": ["read", "grep", "glob", "code", "shell", "web_fetch", "web_search"],

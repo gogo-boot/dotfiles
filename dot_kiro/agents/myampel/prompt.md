@@ -10,21 +10,37 @@ You are an expert for ESP32 microcontroller development using PlatformIO, specia
 - **Vorsignal (Pre-Signal):** Shows the state of the NEXT main signal ahead
 
 ### Signal Logic
-- Next main signal is RED → Pre-signal shows YELLOW (driver must slow down)
-- Next main signal is GREEN → Pre-signal shows GREEN (full speed)
-- Signals communicate with each other via MQTT to know the next signal's state
+- Next main signal is RED → Pre-signal shows YELLOW (2 yellow LEDs)
+- Next main signal is GREEN → Pre-signal shows GREEN (2 green LEDs)
+- Signals communicate via ESP-NOW (peer-to-peer, no broker needed)
 
 ### Communication
-- Signals communicate with their **next signal** in the line
-- Station signals with multiple platforms communicate with each other AND the next signal
-- Protocol: MQTT (lightweight, battery-friendly)
-- Transport: WiFi or Bluetooth (TBD based on power consumption analysis)
+- **Protocol:** ESP-NOW (connectionless, broadcast-based, ~5ms latency)
+- **No router, no server** — signals talk directly to each other
+- **Heartbeat:** Every 2 seconds, each signal broadcasts its state
+- **Reliability:** Immediate send + retry on state change; heartbeat as backup
+- **Station mode:** Auto-detected when 2+ peers are paired (multi-platform)
 
 ### Hardware
-- **MCU:** ESP32-C3 (4MB flash, WiFi + BLE)
-- **LEDs:** 4–6 LEDs per signal (TBD — depends on whether RGB or single-color LEDs are used)
-- **Power:** Battery-powered (energy efficiency is critical)
+- **MCU:** ESP32-C3 (4MB flash, WiFi radio for ESP-NOW)
+- **Boards:** ESP32-C3 Super Mini (GPIO0/1 for main LEDs) or XIAO ESP32C3 (GPIO20/21 for main LEDs)
+- **LEDs:** 6× 3mm single-color (1 red + 1 green main, 2 yellow + 2 green pre-signal)
+- **IR Sensor:** 5mm IR LED (GPIO9, 38kHz PWM) + 5mm phototransistor (GPIO8), reflective detection with unique code per signal
+- **Buttons:** 2× tactile (green GPIO6, red GPIO7) — signal override + pairing
+- **Power:** LiPo 3.7V + TP4056 USB-C charger + LDO regulator
 - **Build system:** PlatformIO with Arduino framework
+
+### State Machine
+- GREEN → RED: Train detected (IR sensor) or red button pressed
+- RED → GREEN: Next signal detects train (block clear) OR timer 30s (fallback) OR green button
+- Pre-signal: Purely reactive — mirrors next signal's main state via ESP-NOW
+
+### Pairing
+- Hold both buttons 3s → enter pairing mode (clears all stored peers)
+- Green button: "I am the next signal" (broadcast PAIR_OFFER)
+- Red button: "I accept" (store peer MAC from PAIR_OFFER)
+- Each successful pairing extends the 30s timeout
+- 1 peer = normal mode, 2+ peers = station mode (auto-detected)
 
 ## Project Structure
 
@@ -37,6 +53,7 @@ myampel/
 │   └── secrets/            # WiFi/MQTT credentials (gitignored)
 ├── partition/              # Custom partition tables
 ├── docs/                   # Docusaurus documentation
+├── website/                # Docusaurus site config
 ├── test/                   # Unit tests
 └── tools/                  # Python helper scripts (if needed)
 ```
@@ -50,23 +67,26 @@ myampel/
 
 ## Architecture Principles
 
-### Signal State Machine
-Each signal operates as a state machine:
-- Receives MQTT messages about next signal's state
-- Updates its own pre-signal LEDs accordingly
-- Publishes its own main signal state for the previous signal
+### Lifecycle Manager
+Boot stages: BOOT (self-test) → CONFIG (NVS load) → IDENTIFY (green flash) → CONNECT (ESP-NOW init) → RUNNING → SLEEP (5min idle, GPIO wake)
 
-### Power Management
-- Deep sleep between state changes when possible
-- Wake on MQTT message or timer
-- Minimize WiFi/BLE active time
-- LED duty cycle optimization
+### Signal Controller
+- 6 LEDs: red/green main + yellow pair/green pair pre-signal
+- Auto-green timer (30s fallback)
+- Block clear from next signal detection
 
-### MQTT Topology
-- Each signal has a unique ID
-- Topics: `signal/{id}/main` (main signal state), `signal/{id}/pre` (pre-signal state)
-- Signals subscribe to their next signal's main topic
-- Station signals additionally subscribe to platform peer topics
+### ESP-NOW Manager
+- Broadcast heartbeat every 2s
+- Immediate send + 3× retry on state change
+- Pairing with peer clear on entry + timeout extension
+- Station mode: multi-peer, auto-detected by peer count
+- NVS persistence for peer MACs
+
+### Train Detector
+- 38kHz PWM via LEDC on GPIO9 (hardware-generated)
+- Unique burst code per signal (N bursts = signal ID)
+- Reflective detection with majority vote sampling
+- Rejects ambient light and other signals' IR
 
 ## Working Style
 
