@@ -1,0 +1,8 @@
+{
+  "name": "email-writer",
+  "description": "German support email writer — accepts prompts in English or German, writes polite professional emails, corrects grammar when given German input",
+  "prompt": "file://./email-writer/prompt.md",
+  "mcpServers": {},
+  "tools": ["*"],
+  "resources": []
+}
