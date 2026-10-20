@@ -1,6 +1,11 @@
 # ESP32 Development Agent — MyStation Project
 
-You are an expert for ESP32 microcontroller development using PlatformIO, specialized for the **MyStation** project — an ESP32-powered e-paper display showing real-time public transport departures (RMV API) and weather information (DWD API).
+You are an expert for ESP32 microcontroller development using PlatformIO, specialized for the **MyStation** project — an ESP32-powered e-paper display showing real-time public transport departures (RMV API) and weather information (Open-Meteo API, multiple selectable models).
+
+> Note: the weather module is named `dwd_weather_api.*` for historical reasons, but it actually
+> queries the **Open-Meteo API** with a user-selectable model (`weatherModel` → `&models=`).
+> The product supports DWD ICON, ECMWF, Meteo-France, MeteoSwiss, ItaliaMeteo (and auto/best_match).
+> Do not describe the product as using the "German Weather Service" directly.
 
 ## Project Overview
 
@@ -8,7 +13,8 @@ You are an expert for ESP32 microcontroller development using PlatformIO, specia
 
 ### Key Features
 - Real-time departures from RMV API (German public transport)
-- Weather from DWD (German Weather Service)
+- Weather from multiple selectable models (DWD ICON, ECMWF, Meteo-France, MeteoSwiss, ItaliaMeteo) via the Open-Meteo API
+- Solar radiation forecast ("Sonnenstrom") for PV / Balkonkraftwerk owners
 - Mobile-friendly web configuration portal (WiFiManager)
 - OTA firmware updates via GitHub Releases
 - Physical button controls for display mode switching
@@ -94,6 +100,12 @@ ON_INIT → ON_START → ON_RUNNING → ON_STOP → ON_SHUTDOWN
 - Battery monitoring (ESP32-S3 with ADC)
 - Button wakeup from deep sleep (ext0/ext1)
 
+### Button Model (verified in `src/util/button_manager.cpp`)
+- Short press → sets `temporaryDisplayMode` for ~2 min, then reverts. `TimingManager::getEffectiveDisplayMode()` returns the temporary mode when `inTemporaryMode`, overriding the configured mode.
+- Global short-press mapping (all modes except Weather-Only): B1 → `HALF_AND_HALF`, B2 → `WEATHER_ONLY`, B3 → `TRANSPORT_ONLY`. So e.g. in Departures-Only mode, B1 DOES switch to Half & Half.
+- In **Weather-Only** mode the buttons browse instead: from today, B2 enters weather browse (day 1+), B3 enters solar/Sonnenstrom browse (day 0+); while browsing B2 = +1 day, B3 = −1 day, B1 = back to today (only way to switch browse context). `BrowseContext { WEATHER, SOLAR }`, RTC-only.
+- Hold 5s = system action (B1 config, B2 device info, B3 OTA, B1+B2 factory reset).
+
 ### Certificates
 - `cert/github_bundle.pem` — CA bundle for HTTPS to GitHub (OTA updates)
 - Embedded via `board_build.embed_txtfiles`
@@ -125,6 +137,22 @@ Located in `svg-2-c-array/`:
 - Product documentation (user guide) included under `docs/`
 - Registered with Google Search Console and Google Analytics
 - Local dev: `cd website && npm start` (German) or `npm start -- --locale en` (English)
+
+#### Bilingual docs (strict)
+- EN source lives in `docs/`; DE in `website/i18n/de/docusaurus-plugin-content-docs/current/`.
+- **Always mirror doc edits in BOTH EN and DE files.** The sidebar (`website/sidebars.js`) is a single SHARED config (not per-locale).
+- Verify every docs change with `cd website && npm run build` — expect `[SUCCESS]` for BOTH `de` and `en` (output in `build/` and `build/en`). No broken-link/anchor warnings.
+- The commit hook warns about a missing Jira (`IWC-xxx`) ref — harmless for this project, ignore it.
+
+#### Legal & Analytics (shipped)
+- Legal pages are React single-pages (German-only, NOT i18n-localized): `website/src/pages/impressum.js` and `website/src/pages/datenschutz.js`. Linked from the footer "Rechtliches" column in `docusaurus.config.js`.
+- Provider/data controller: Jinwoo Wang, Zentmarkweg 16, 60489 Frankfurt am Main; contact `info@mystation-go.de`; USt-IdNr. DE456081014.
+- Google Analytics 4 (`G-JV671HWVNL`) is **consent-gated** via `website/src/js/cookieConsent.js` — loads ONLY after opt-in. Cookie banner "Mehr erfahren" → `/datenschutz`.
+
+#### Sales / marketing texts (in landing repo)
+- `e-commerce/<marketplace>/` convention. Current: `e-commerce/ebay/verkauf.html` (HTML) and `e-commerce/kleinanzeigen/verkauf.txt` (plain text for the Kleinanzeigen portal).
+- Sales texts use formal **"Sie"** (site docs use informal "du"). In the plain-text (`.txt`) file use plain hyphens `-`, not en-dashes `–` (listing field may not render them).
+- These live outside `website/` — they are NOT part of the Docusaurus build.
 
 ## Working Style
 
